@@ -23,6 +23,7 @@ public class TicTacToe implements ActionListener {
     // Creating class constructor for creating grid
     TicTacToe()
     {
+        // Background setting
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(800, 800);
         gameFrame.getContentPane().setBackground(new Color(114, 78, 21));
@@ -30,6 +31,7 @@ public class TicTacToe implements ActionListener {
         gameFrame.setLayout(new BorderLayout());
         gameFrame.setVisible(true);
 
+        // Title setting
         title.setBackground(new Color(114, 78, 21));
         title.setForeground(new Color(63, 37, 0));
         title.setFont(new Font("Roboto", Font.BOLD, 90));
@@ -40,9 +42,11 @@ public class TicTacToe implements ActionListener {
         titlePanel.setLayout(new BorderLayout());
         titlePanel.setBounds(0, 0, 800, 100);
 
+        // Create Button layout (3*3)
         buttonPanel.setLayout(new GridLayout(3, 3));
         buttonPanel.setBackground(new Color(114, 78, 21));
-
+        
+        // Add buttons into the layout
         for (int i = 0; i < 9; i++)
         {
             gridCells[i] = new JButton();
@@ -78,6 +82,7 @@ public class TicTacToe implements ActionListener {
         }
     }
 
+    // Method to end the game and display a dialog for choosing to restart odr exit the game
     public void end(String s)
     {
         turnCounter = 0;
