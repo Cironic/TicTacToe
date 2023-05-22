@@ -10,7 +10,7 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Welcome, you can say Hello or Help. Which would you like to try?';
+        const speakOutput = 'Willkommen beim Tic Tac Toe-Spiel. Um ein neues Spiel zu starten, sag einfach "Neues Spiel" oder um das Spiel zu beenden, sag "Spiel beenden". Wie kann ich dir helfen?';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -26,6 +26,55 @@ const HelloWorldIntentHandler = {
     },
     handle(handlerInput) {
         const speakOutput = 'Hello World!';
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+};
+
+const StartGameIntentHandler = {
+    
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'StartGameIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = `Lass uns beginnen! Spieler 1 ist X und beginnt. Wo möchtest du deinen Zug platzieren?`;
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+};
+
+const ShowBoardIntentHandler = {
+    
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ShowBoardIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = `Das Spielfeld sieht wie folgt aus: 1 2 3, 4 5 6, 7 8 9`;
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+};
+
+const PlaceMarkIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlaceMarkIntent';
+    },
+    handle(handlerInput) {
+        const position = Alexa.getSlotValue(handlerInput.requestEnvelope, 'Position')
+        //spielfeld.position = curPlayer
+        const speakOutput = `Ok dein Zug wurde platziert. Spieler 1 ist an der Reihe.`;
+        //swapCurrentPlayer();
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
