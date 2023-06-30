@@ -3,7 +3,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-public class TicTacToe implements ActionListener {
+public class TicTacToeOld implements ActionListener {
     // JFrame for the game window
     private JFrame gameFrame = new JFrame();
     // JPanel for the Tic Tac Toe grid
@@ -21,11 +21,11 @@ public class TicTacToe implements ActionListener {
     private boolean isPlayer1Turn;
 
     // Creating class constructor for creating grid
-    TicTacToe()
+    TicTacToeOld()
     {
         // Background setting
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameFrame.setSize(1200, 800);
+        gameFrame.setSize(800, 800);
         gameFrame.getContentPane().setBackground(new Color(114, 78, 21));
         gameFrame.setTitle("Tic Tac Toe");
         gameFrame.setLayout(new BorderLayout());
@@ -45,7 +45,7 @@ public class TicTacToe implements ActionListener {
         // Create Button layout (3*3)
         buttonPanel.setLayout(new GridLayout(3, 3));
         buttonPanel.setBackground(new Color(114, 78, 21));
-        
+
         // Add buttons into the layout
         for (int i = 0; i < 9; i++)
         {
@@ -91,7 +91,7 @@ public class TicTacToe implements ActionListener {
         if(x==0)
         {
             gameFrame.dispose();
-            new TicTacToe();
+            new TicTacToeOld();
         }
         else
         {

@@ -1,28 +1,25 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 
 public class TicTacToe implements ActionListener {
-    // JFrame for the game window
-    private JFrame gameFrame = new JFrame();
-    // JPanel for the Tic Tac Toe grid
-    private JPanel titlePanel = new JPanel();
-    // JPanel for the bottom of the game window
-    private JPanel buttonPanel = new JPanel();
-    // JLabel to display the game title and the current turn
-    private JLabel title = new JLabel();
-    // Array of JButtons for each grid cell
-    private JButton[] gridCells = new JButton[9];
-    // Random object to decide the starting player
-    private Random random = new Random();
-    private int turnCounter = 0;
-    // Flag to indicate the current player's turn
-    private boolean isPlayer1Turn;
+    private static final JFrame gameFrame = new JFrame(); // JFrame for the game window
+    private JPanel titlePanel = new JPanel(); // JPanel for the Tic Tac Toe grid
+    private MouseMovementRecorder mousePanel = new MouseMovementRecorder();
+    public static JLabel title = new JLabel(); // JLabel to display the game title and the current turn
+    public static JButton[] gridCells = new JButton[9]; // Array of JButtons for each grid cell
+    public static JButton undoButton = new JButton("Undo");
+    private final Random random = new Random(); // Random object to decide the starting player
+    public static int turnCounter = 0;
+    public static boolean isPlayer1Turn; // Flag to indicate the current player's turn
+    public static List<Integer> moveHistory = new ArrayList<>();
+
 
     // Creating class constructor for creating grid
-    TicTacToe()
-    {
+    public TicTacToe() {
         // Background setting
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(1200, 800);
@@ -42,11 +39,21 @@ public class TicTacToe implements ActionListener {
         titlePanel.setLayout(new BorderLayout());
         titlePanel.setBounds(0, 0, 800, 100);
 
+        undoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoMove(); // Rufe die Methode zum Rückgängig machen des Zugs auf
+            }
+        });
+
         // Create Button layout (3*3)
-        buttonPanel.setLayout(new GridLayout(3, 3));
+        // JPanel for the bottom of the game window
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3,3));
         buttonPanel.setBackground(new Color(114, 78, 21));
-        
+
         // Add buttons into the layout
+
         for (int i = 0; i < 9; i++)
         {
             gridCells[i] = new JButton();
@@ -57,10 +64,17 @@ public class TicTacToe implements ActionListener {
             gridCells[i].setBackground(new Color(114, 78, 21));
             gridCells[i].setOpaque(true);
         }
+
+        mousePanel.setPreferredSize(new Dimension(600, 100));
+        mousePanel.setOpaque(true);
+        mousePanel.setBackground(new Color(128, 128, 128));
+
+
         //add the parts of the game together in the gameFrame
         titlePanel.add(title);
         gameFrame.add(titlePanel, BorderLayout.NORTH);
         gameFrame.add(buttonPanel);
+        gameFrame.add(mousePanel, BorderLayout.EAST);
 
         selectStartingPlayer();
     }
@@ -83,26 +97,23 @@ public class TicTacToe implements ActionListener {
     }
 
     // Method to end the game and display a dialog for choosing to restart odr exit the game
-    public void end(String s)
-    {
+    public static void end(String s) throws IOException {
         turnCounter = 0;
         Object[] option={"Restart","Exit"};
         int x=JOptionPane.showOptionDialog(gameFrame, "Game Over\n"+s,"Game Over", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, option, option[0]);
         if(x==0)
         {
-            gameFrame.dispose();
+//            gameFrame.dispose();
+            System.exit(1);
             new TicTacToe();
-        }
-        else
-        {
-            gameFrame.dispose();
-        }
 
+        }
+        else{gameFrame.dispose();}
     }
 
+
     // Creating method for checking winning conditions
-    public void checkForWinner()
-    {
+    public static void checkForWinner() throws IOException {
         if ((gridCells[0].getText() == "X") && (gridCells[1].getText() == "X") && (gridCells[2].getText() == "X"))
         {
             xWins(0, 1, 2);
@@ -175,8 +186,7 @@ public class TicTacToe implements ActionListener {
     }
 
     //handler for the situation when O wins
-    public void oWins(int oCell1, int oCell2, int oCell3)
-    {
+    public static void oWins(int oCell1, int oCell2, int oCell3) throws IOException {
         gridCells[oCell1].setBackground(new Color(191, 51, 201));
         gridCells[oCell2].setBackground(new Color(191, 51, 201));
         gridCells[oCell3].setBackground(new Color(191, 51, 201));
@@ -190,8 +200,7 @@ public class TicTacToe implements ActionListener {
     }
 
     //handler for the situation when X wins
-    public void xWins(int xCell1, int xCell2, int xCell3)
-    {
+    public static void xWins(int xCell1, int xCell2, int xCell3) throws IOException {
         gridCells[xCell1].setBackground(new Color(191, 51, 201));
         gridCells[xCell2].setBackground(new Color(191, 51, 201));
         gridCells[xCell3].setBackground(new Color(191, 51, 201));
@@ -202,6 +211,17 @@ public class TicTacToe implements ActionListener {
         }
         title.setText("Player X wins");
         end("Player X Wins");
+    }
+
+    public static void undoMove() {
+        if (!moveHistory.isEmpty()) {
+            int lastMoveIndex = moveHistory.get(moveHistory.size() - 1);
+            gridCells[lastMoveIndex].setText(""); // Setze das Feld zurück
+            moveHistory.remove(moveHistory.size() - 1); // Entferne den Zug aus der moveHistory
+            turnCounter--; // Reduziere den Zähler der Spielzüge um eins
+            isPlayer1Turn = !isPlayer1Turn; // Wechsle den aktuellen Spieler
+            title.setText(isPlayer1Turn ? "X's turn" : "O's turn"); // Aktualisiere die Anzeige für den aktuellen Spieler
+        }
     }
 
     //handler for every action performed
@@ -221,7 +241,11 @@ public class TicTacToe implements ActionListener {
                         isPlayer1Turn = false;
                         title.setText("O's turn");
                         turnCounter++;
-                        checkForWinner();
+                        try {
+                            checkForWinner();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
                 //if gridCell is already filled do nothing
@@ -234,10 +258,16 @@ public class TicTacToe implements ActionListener {
                         isPlayer1Turn = true;
                         title.setText("X's turn");
                         turnCounter++;
-                        checkForWinner();
+                        try {
+                            checkForWinner();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
+                moveHistory.add(i);
             }
         }
     }
 }
+
